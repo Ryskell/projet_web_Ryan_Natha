@@ -1,10 +1,14 @@
+// src/app.module.ts
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
-import { AppResolver } from './app.resolver';
-import { QueueModule } from './queues/queue.module';
-import { HealthController } from './health/health.controller';
+import { UserResolver } from './resolvers/user.resolver';
+import { ConversationResolver } from './resolvers/conversation.resolver';
+import { MessageResolver } from './resolvers/message.resolver';
+import { UserService } from './services/user.service';
+import { ConversationService } from './services/conversation.service';
+import { MessageService } from './services/message.service';
 
 @Module({
   imports: [
@@ -12,9 +16,14 @@ import { HealthController } from './health/health.controller';
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
     }),
-    QueueModule,
   ],
-  controllers: [HealthController],
-  providers: [AppResolver],
+  providers: [
+    UserResolver,
+    ConversationResolver,
+    MessageResolver,
+    UserService,
+    ConversationService,
+    MessageService,
+  ],
 })
 export class AppModule { }
