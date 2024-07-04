@@ -1,10 +1,10 @@
-// src/resolvers/conversation.resolver.ts
 import { Resolver, Mutation, Args, Query } from '@nestjs/graphql';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 import { ConversationService } from '../services/conversation.service';
 import { UserService } from '../services/user.service';
+import { MessageService } from '../services/message.service';
 import { Conversation } from '../models/conversation.model';
-import { Message } from '../models/message.model';
-import { MessageService } from 'src/services/message.service';
 
 @Resolver(() => Conversation)
 export class ConversationResolver {
@@ -12,6 +12,7 @@ export class ConversationResolver {
     private conversationService: ConversationService,
     private userService: UserService,
     private messageService: MessageService,
+    @InjectQueue('message-queue') private readonly messageQueue: Queue,
   ) { }
 
   @Query(() => [Conversation])
@@ -31,16 +32,24 @@ export class ConversationResolver {
   }
 
   @Mutation(() => Conversation)
-  sendMessage(
+  async sendMessage(
     @Args('conversationId') conversationId: string,
     @Args('content') content: string,
     @Args('senderId') senderId: string,
-  ): Conversation {
+  ): Promise<Conversation> {
     const sender = this.userService.getUserById(senderId);
     if (!sender) {
       throw new Error('Sender not found');
     }
+
     const message = this.messageService.createMessage(content, sender);
-    return this.conversationService.addMessage(conversationId, message);
+
+    // Add the message to the queue
+    await this.messageQueue.add('sendMessage', {
+      conversationId,
+      message,
+    });
+
+    return this.conversationService.getConversationById(conversationId);
   }
 }

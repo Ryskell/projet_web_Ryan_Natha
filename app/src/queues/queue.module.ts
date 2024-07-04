@@ -1,7 +1,8 @@
-// src/queues/queue.module.ts
 import { Module } from '@nestjs/common';
 import { BullModule } from '@nestjs/bull';
-import { QueueProcessor } from './queue.processor';
+import { MessageProcessor } from './message.processor';
+import { ConversationService } from '../services/conversation.service';
+import { memoryStoreProvider } from '../services/memory-store.provider';
 
 @Module({
   imports: [
@@ -12,10 +13,10 @@ import { QueueProcessor } from './queue.processor';
       },
     }),
     BullModule.registerQueue({
-      name: 'test-queue',
+      name: 'message-queue',
     }),
   ],
-  providers: [QueueProcessor],
-  exports: [BullModule],
+  providers: [MessageProcessor, ConversationService, memoryStoreProvider],
+  exports: [BullModule, memoryStoreProvider],
 })
 export class QueueModule { }
