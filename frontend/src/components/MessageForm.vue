@@ -16,7 +16,7 @@ const SEND_MESSAGE = gql`
 `;
 
 export default {
-  props: ['conversationId'],  // Assurez-vous que la prop conversationId est déclarée ici
+  props: ['conversationId'],
   data() {
     return {
       newMessage: ''
@@ -34,10 +34,11 @@ export default {
             data: {
               content: this.newMessage,
               from: "668e75717ca5b2b2867695ad",  // Remplacez par l'ID de l'utilisateur
-              conversationId: this.conversationId  // Utilisation de la prop passée
+              conversationId: this.conversationId
             }
           });
           this.newMessage = '';
+          this.$emit('message-sent');  // Emettre l'événement après l'ajout du message
         } catch (error) {
           console.error("Error sending message:", error);
         }
