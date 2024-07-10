@@ -39,6 +39,7 @@ export default {
           });
           this.newMessage = '';
           this.$emit('message-sent');  // Emettre l'événement après l'ajout du message
+          console.log("Event 'message-sent' emitted");
         } catch (error) {
           console.error("Error sending message:", error);
         }

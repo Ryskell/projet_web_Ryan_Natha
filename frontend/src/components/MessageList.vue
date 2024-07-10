@@ -8,8 +8,9 @@
 
 <script>
 import gql from 'graphql-tag';
-import { useQuery, useResult } from '@vue/apollo-composable';
-import { watch } from 'vue';
+import { useQuery } from '@vue/apollo-composable';
+import { watch, computed } from 'vue';
+import { onBeforeRouteUpdate } from 'vue-router';
 
 const GET_MESSAGES_BY_CONVERSATION_ID = gql`
   query messagesByConversationId($conversationId: String!) {
@@ -26,15 +27,28 @@ export default {
   props: ['conversationId'],
   setup(props) {
     const { result, loading, error, refetch } = useQuery(GET_MESSAGES_BY_CONVERSATION_ID, { conversationId: props.conversationId });
-    const messages = useResult(result, [], data => data.messagesByConversationId);
+    const messages = computed(() => result.value?.messagesByConversationId ?? []);
 
     // Fonction pour rafraîchir les messages
-    const refreshMessages = () => {
-      refetch();
+    const refreshMessages = async () => {
+      try {
+        const { data } = await refetch();
+        console.log('Data after refetch:', data);
+      } catch (error) {
+        console.error('Error during refetch:', error);
+      }
     };
 
     // Regarder les changements de conversationId pour refetcher les messages
     watch(() => props.conversationId, refreshMessages);
+
+    // Utiliser onBeforeRouteUpdate pour réagir aux changements de route
+    onBeforeRouteUpdate((to, from, next) => {
+      if (to.params.id !== from.params.id) {
+        refetch({ conversationId: to.params.id });
+      }
+      next();
+    });
 
     return {
       messages,

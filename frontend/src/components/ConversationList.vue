@@ -1,8 +1,7 @@
 <template>
   <div class="conversation-list">
     <ul>
-      <li v-for="conversation in conversations" :key="conversation.id"
-        @click="() => selectConversation(conversation.id)">
+      <li v-for="conversation in conversations" :key="conversation.id" @click="selectConversation(conversation.id)">
         <div>
           <strong>{{ conversation.title }}</strong>
           <span>{{ conversation.time }}</span>
@@ -52,6 +51,10 @@ export default {
 
     const selectConversation = (id) => {
       router.push({ name: 'ConversationMessages', params: { id } });
+      setTimeout(() => {
+        const event = new Event('change-convo');
+        window.dispatchEvent(event);
+      }, 0);
     };
 
     return {
