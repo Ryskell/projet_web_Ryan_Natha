@@ -1,26 +1,15 @@
-// message.resolver.ts
-import { Resolver, Mutation, Args } from '@nestjs/graphql';
-import { MessageService } from '../modules/message/message.service';
+// src/resolvers/message.resolver.ts
+import { Resolver, Query, Args } from '@nestjs/graphql';
 import { Message } from '../models/message.model';
-import { UserService } from '../modules/user/user.service';
-import { ConversationService } from '../modules/conversation/conversation.service';
+import { ConversationService } from '../services/conversation.service';
 
 @Resolver(() => Message)
 export class MessageResolver {
-  constructor(
-    private readonly messageService: MessageService,
-    private readonly userService: UserService,
-    private readonly conversationService: ConversationService,
-  ) {}
+  constructor(private conversationService: ConversationService) { }
 
-  @Mutation(() => Message)
-  async sendMessage(
-    @Args('content') content: string,
-    @Args('senderId') senderId: string,
-    @Args('conversationId') conversationId: string,
-  ): Promise<Message> {
-    const sender = await this.userService.findUserById(senderId);
-    const conversation = await this.conversationService.findConversationById(conversationId);
-    return this.messageService.createMessage(content, sender, conversation);
+  @Query(() => [Message])
+  getMessages(@Args('conversationId') conversationId: string): Message[] {
+    const conversation = this.conversationService.getConversationById(conversationId);
+    return conversation ? conversation.messages : [];
   }
 }

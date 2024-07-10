@@ -1,3 +1,4 @@
+// src/models/user.model.ts
 import { ObjectType, Field, ID } from '@nestjs/graphql';
 
 @ObjectType()
@@ -6,11 +7,8 @@ export class User {
   id: string;
 
   @Field()
-  username: string;
+  name: string;
 
   @Field()
   email: string;
-
-  @Field()
-  createdAt: Date;
 }

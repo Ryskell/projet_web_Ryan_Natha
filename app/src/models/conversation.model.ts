@@ -1,5 +1,7 @@
+// src/models/conversation.model.ts
 import { ObjectType, Field, ID } from '@nestjs/graphql';
 import { User } from './user.model';
+import { Message } from './message.model';
 
 @ObjectType()
 export class Conversation {
@@ -9,6 +11,6 @@ export class Conversation {
   @Field(() => [User])
   participants: User[];
 
-  @Field()
-  createdAt: Date;
+  @Field(() => [Message])
+  messages: Message[];
 }
