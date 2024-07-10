@@ -1,27 +1,44 @@
 <template>
-  <form @submit.prevent="createConversation">
-    <input v-model="title" placeholder="Nom" />
-    <button type="submit">Ajouter</button>
-  </form>
+  <div>
+    <input v-model="title" placeholder="Conversation title">
+    <input v-model="userIds" placeholder="User IDs (comma separated)">
+    <button @click="createConversation">Create</button>
+  </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref } from 'vue';
-import { useStore } from 'vuex';
+<script>
+import { ref } from 'vue';
+import { useMutation } from '@vue/apollo-composable';
+import gql from 'graphql-tag';
 
-export default defineComponent({
-  name: 'NewConversationForm',
-  setup(props, { emit }) {
-    const store = useStore();
+export default {
+  setup(_, { emit }) {
     const title = ref('');
+    const userIds = ref('');
 
-    async function createConversation() {
-      await store.dispatch('createConversation', { title: title.value });
+    const CREATE_CONVERSATION = gql`
+      mutation createConversation($data: ConversationInput!) {
+        createConversation(data: $data)
+      }
+    `;
+
+    const { mutate } = useMutation(CREATE_CONVERSATION);
+
+    const createConversation = async () => {
+      const userIdsArray = userIds.value.split(',').map(id => id.trim());
+      await mutate({
+        data: {
+          title: title.value,
+          userIds: userIdsArray
+        }
+      });
       title.value = '';
-      emit('created');
-    }
+      userIds.value = '';
+      emit('conversation-created');
+      this.$router.push({ name: 'Conversations' });
+    };
 
-    return { title, createConversation };
-  },
-});
+    return { title, userIds, createConversation };
+  }
+}
 </script>

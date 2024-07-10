@@ -1,16 +1,32 @@
 <template>
   <div id="app">
-    <router-view />
+    <div class="container">
+      <conversation-list class="conversation-list"></conversation-list>
+      <router-view class="message-list"></router-view>
+    </div>
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script>
+import ConversationList from './components/ConversationList.vue';
 
-export default defineComponent({
-  name: 'App',
-});
+export default {
+  components: {
+    ConversationList,
+  }
+}
 </script>
 
-<style>
+<style scoped>
+.container {
+  display: flex;
+}
+
+.conversation-list {
+  width: 30%;
+}
+
+.message-list {
+  width: 70%;
+}
 </style>
