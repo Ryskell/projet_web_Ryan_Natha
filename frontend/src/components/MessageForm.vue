@@ -33,12 +33,12 @@ export default {
           await this.sendMessage({
             data: {
               content: this.newMessage,
-              from: "668e75717ca5b2b2867695ad",  // Remplacez par l'ID de l'utilisateur
+              from: "668e75717ca5b2b2867695ad",
               conversationId: this.conversationId
             }
           });
           this.newMessage = '';
-          this.$emit('message-sent');  // Emettre l'événement après l'ajout du message
+          this.$emit('message-sent');
           console.log("Event 'message-sent' emitted");
         } catch (error) {
           console.error("Error sending message:", error);

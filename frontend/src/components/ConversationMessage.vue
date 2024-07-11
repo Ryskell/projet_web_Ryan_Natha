@@ -27,7 +27,7 @@ export default {
         if (messageListRef.value) {
           messageListRef.value.refreshMessages();
         }
-      }, 100);  // Appeler refreshMessages après un court délai
+      }, 100);
     };
 
     onMounted(() => {

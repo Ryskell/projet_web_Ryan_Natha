@@ -29,7 +29,6 @@ export default {
     const { result, loading, error, refetch } = useQuery(GET_MESSAGES_BY_CONVERSATION_ID, { conversationId: props.conversationId });
     const messages = computed(() => result.value?.messagesByConversationId ?? []);
 
-    // Fonction pour rafraîchir les messages
     const refreshMessages = async () => {
       try {
         const { data } = await refetch();
@@ -39,10 +38,8 @@ export default {
       }
     };
 
-    // Regarder les changements de conversationId pour refetcher les messages
     watch(() => props.conversationId, refreshMessages);
 
-    // Utiliser onBeforeRouteUpdate pour réagir aux changements de route
     onBeforeRouteUpdate((to, from, next) => {
       if (to.params.id !== from.params.id) {
         refetch({ conversationId: to.params.id });
